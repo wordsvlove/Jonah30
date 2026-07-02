@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>31天靈修旅程：約拿書的生命對話</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@300;400;600&display=swap');
+        
+        body {
+            background-color: #141322;
+            color: #ffffff;
+            font-family: 'Noto Serif TC', serif;
+            -webkit-font-smoothing: antialiased;
+        }
+        
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+        }
+
+        .scrollbar-hide::-webkit-scrollbar {
+            display: none;
+        }
+        .scrollbar-hide {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        .day-btn.active {
+            background-color: rgba(255, 255, 255, 0.15);
+            border-left: 4px solid #a78bfa; 
+            font-weight: 600;
+        }
+        
+        .play-btn:hover {
+            transform: scale(1.05);
+            transition: transform 0.2s;
+        }
+    </style>
+</head>
+<body class="h-screen flex overflow-hidden">
+
+    <!-- Mobile Header -->
+    <div class="md:hidden fixed top-0 w-full glass-panel z-50 px-4 py-3 flex justify-between items-center bg-[#141322]">
+        <h1 class="text-lg font-semibold tracking-wider">約拿書靈修旅程</h1>
+        <button id="menu-toggle" class="text-white focus:outline-none">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+        </button>
+    </div>
+
+    <!-- Sidebar (Days Navigation) -->
+    <aside id="sidebar" class="w-64 glass-panel h-full flex-shrink-0 flex flex-col absolute md:relative z-40 transform -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out mt-14 md:mt-0 pb-14 md:pb-0 bg-[#141322] md:bg-transparent border-r border-white/10">
+        <div class="p-6 hidden md:block">
+            <h1 class="text-xl font-semibold tracking-wider text-purple-300">約拿書靈修</h1>
+            <p class="text-xs text-gray-400 mt-2">聽命與恩慈的生命對話</p>
+        </div>
+        <div class="flex-1 overflow-y-auto scrollbar-hide py-2" id="days-list">
+            <!-- JavaScript will populate days here -->
+        </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 h-full overflow-y-auto p-6 md:p-12 mt-14 md:mt-0 relative">
+        <div class="max-w-3xl mx-auto pb-20">
+            <div id="content-container" class="opacity-0 transition-opacity duration-500">
+                <!-- JavaScript will populate content here -->
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // 靈修資料庫 (31天)
+        const devotions = [
+            {
+                day: 1,
+                title: "神的呼召與恩典的起點",
+                scriptureRef: "約拿書 1:1-2",
+                scriptureText: "耶和華的話臨到亞米太的兒子約拿，說：你起來往尼尼微大城去，向其中的居民呼喊，因為他們的惡達到我面前。",
+                content: "神的話語主動臨到先知約拿。尼尼微是一個充滿罪惡的異教大城，但神沒有立刻降下雷火毀滅他們，反而差派先知去宣告信息。這顯示了神在審判之前，總會給予回轉的機會。<br><br>我們常以為神只關心教會裡的人，但這段經文告訴我們，神的眼目察看全地，祂也關心那些在罪惡中迷失的人。神的呼召有時會挑戰我們的舒適圈，要我們去關心我們本來不熟悉、甚至不喜歡的人。<br><br>神愛那些在城中迷失的人。祂問我們是否願意成為祂的出口，將祂的心意傳遞給他們。",
+                q1: "神今天是否將某個群體或某個人放在你心裡，要你去關心？",
+                q2: "面對神突如其來的呼召，你通常的第一反應是甚麼？",
+                prayer: "天父，多謝祢對世人充滿憐憫。求祢擴闊我嘅眼界，等我唔單止睇到自己嘅需要，亦都睇到身邊迷失嘅人。賜我順服嘅心，願意回應祢嘅呼召。阿們。"
+            },
+            {
+                day: 2,
+                title: "走自己的路",
+                scriptureRef: "約拿書 1:3",
+                scriptureText: "約拿卻起來，逃往他施去躲避耶和華；下到約帕，遇見一隻船，要往他施去。他就給了船價，上了船，要與船上的人同往他施去躲避耶和華。",
+                content: "約拿聽到了神的吩咐，但他選擇了相反的方向。尼尼微在東邊，他卻買了船票往西邊的他施去。他以為只要走得夠遠，就可以躲避耶和華。<br><br>身為信徒，我們有時也會像約拿一樣。我們明知道神的旨意是甚麼（例如去饒恕、去愛、去放下某種執著），但我們卻選擇「買船票」逃跑，用忙碌的生活或其他的藉口來掩飾。然而，神是無所不在的，我們無法逃離祂的愛，也無法逃離祂為我們預備的最好計劃。<br><br>神問我們覺得自己可以逃到哪裡去。祂的目光從未離開過我們。神呼喚我們回來，告訴我們祂的道路雖然有挑戰，但卻充滿著真實的平安。",
+                q1: "你目前的生活中，有沒有哪件事是你正在「逃避神」的？",
+                q2: "你覺得神為甚麼不直接任由約拿走掉，而要一直尋找他？",
+                prayer: "主耶穌，我承認我有時真係好硬頸，鍾意揀自己嘅路行，避開祢嘅提醒。求祢原諒我嘅任性，幫我迴轉，甘心樂意咁行喺祢嘅旨意當中。阿們。"
+            },
+            {
+                day: 3,
+                title: "神恩典的攔阻",
+                scriptureRef: "約拿書 1:4",
+                scriptureText: "然而耶和華使海中起大風，海就狂風大作，甚至船幾乎破壞。",
+                content: "約拿以為一切順利，船也開了。然而，神主動介入了。「耶和華使海中起大風」，這場風暴不是為了摧毀約拿，而是為了攔阻他繼續走在錯誤的道路上。<br><br>當我們偏行己路時，如果一切順利，那反而是危險的。有時候，生命中突如其來的「狂風大作」（可能是計畫受阻、遇到困難），其實是神愛的攔阻。神因為愛我們，所以不忍心看我們越走越遠。祂用風暴來喚醒我們，要將我們帶回祂的同在裡。<br><br>神提醒我們不要抱怨生活中的不順利。有時候，那是祂為我們興起的風暴，目的是要保護我們不至於迷失在沒有祂的汪洋中。",
+                q1: "回望過去，有沒有一次「不順利」或「挫折」，最終卻保守了你不偏離正道？",
+                q2: "面對現在的挑戰，你願意相信這背後有神愛的美意嗎？",
+                prayer: "天父，多謝祢冇由得我偏行己路。如果我而家正面對風暴，求祢俾我明白祢嘅心意，知道祢係為咗愛我、保護我先至攔阻我。阿們。"
+            },
+            {
+                day: 4,
+                title: "屬靈的沉睡",
+                scriptureRef: "約拿書 1:5",
+                scriptureText: "水手便懼怕，各人哀求自己的神。他們將船上的貨物拋在海中，為要使船輕些。約拿已下到底艙，躺臥沉睡。",
+                content: "在生死存亡的關頭，不認識神的水手們極力自救並呼求神明。而那位認識天地之主的先知約拿，卻在底艙呼呼大睡，對外面的危機毫無反應。<br><br>這是一個強烈的對比。有時候，不認識神的人對社會的危機、別人的需要充滿焦急與關注，而身為基督徒的我們，卻可能因為靈裡的遲鈍而「躺臥沉睡」。我們在自己的小天地裡覺得安穩，卻聽不見外面世界呼救的聲音。神希望我們是一個時刻警醒、與祂同工的人。<br><br>神呼喚我們醒來，這不是睡覺的時候。祂要我們看看周圍的人，因為他們需要認識那真正能平息風浪的主。",
+                q1: "你覺得自己目前的屬靈狀態是警醒的，還是沉睡的？",
+                q2: "身邊有沒有人在面對人生的風暴，而你過去一直沒有察覺？",
+                prayer: "主啊，求祢喚醒我沉睡嘅靈魂。唔好俾我對身邊嘅需要視而不見、麻木不仁。賜我敏銳嘅心，去關心身邊面對緊風暴嘅人。阿們。"
+            },
+            {
+                day: 5,
+                title: "藉著他人發出的呼喚",
+                scriptureRef: "約拿書 1:6",
+                scriptureText: "船主到他那裡對他說：你這沉睡的人哪，為何這樣呢？起來，求告你的神，或者神顧念我們，使我們不至滅亡。",
+                content: "船主搖醒了約拿，責備他為甚麼還在睡，並催促他起來禱告。很奇妙，神竟然透過一個不認識耶和華的船主，來喚醒並提醒先知約拿應該做的事。<br><br>神可以使用任何人、任何環境向我們說話。有時，一句來自非信徒的責備、一個來自朋友的提醒，正是神對我們的呼喚。我們不要因為說話者的身分而忽略了其中的真理。當我們靈性軟弱時，神會用各種方法叫我們起來，求告神。<br><br>神說話的聲音有時在微風中，有時在別人的責備裡。只要保持謙卑的心，我們就能聽見祂對我們的呼喚。",
+                q1: "神最近有沒有透過身邊的人（甚至是未信主的人）提醒你一些事？",
+                q2: "「起來，求告你的神」，這句話對你今天的處境有甚麼意義？",
+                prayer: "天父，多謝祢用唔同嘅方法去提醒我。求祢賜我謙卑受教嘅心，無論係邊個講說話，只要係出於祢嘅真理，我都願意虛心聆聽同反省。阿們。"
+            },
+            {
+                day: 6,
+                title: "神掌管萬有",
+                scriptureRef: "約拿書 1:7",
+                scriptureText: "船上的人彼此說：來吧，我們掣籤，看看這災臨到我們是因誰的緣故。於是他們掣籤，掣出約拿來。",
+                content: "水手們決定用當時流行的方法——掣籤，來找出招惹災禍的人。結果，籤準確無誤地落在了約拿身上。<br><br>在人看來，掣籤是隨機的機率；但在神手中，沒有甚麼是偶然的。《箴言》說：「籤放在懷裡，定事由耶和華。」神掌管著看似隨機的事件，為的是引導我們面對真實的自己。我們生命中遇到的許多「巧合」，其實都是神細心安排的指引，要將我們帶回祂的光中。<br><br>神提醒我們，生命中沒有偶然，一切都在祂的看顧之下。當環境將我們推向某個決定時，不要害怕，因為那裡有祂的帶領。",
+                q1: "你生命中有沒有一些看似「偶然」的事件，後來發現其實是神的帶領？",
+                q2: "知道神掌管一切「巧合」，如何幫助你面對今天的不確定性？",
+                prayer: "主耶穌，我深信我嘅生命冇所謂嘅巧合，一切都有祢嘅帶領。求祢俾我喺每一件大小事上面，都見到祢掌權嘅手，安心信靠祢。阿們。"
+            },
+            {
+                day: 7,
+                title: "重拾真身分",
+                scriptureRef: "約拿書 1:8-9",
+                scriptureText: "眾人對他說：請你告訴我們，這災臨到我們是因誰的緣故？你以何事為業？你從哪裡來？你是哪一國？屬哪一族的人？他說：我是希伯來人。我敬畏耶和華，那創造滄海旱地之天上的神。",
+                content: "面對水手們一連串的質問，約拿終於開口了。他沒有隱瞞，坦白宣告自己的身分：「我是希伯來人，我敬畏耶和華」。在逃跑的路上，他第一次重新確認了自己與神的關係。<br><br>無論我們軟弱跌倒了多少次，走偏了多遠，我們作為神兒女的身分永遠不會改變。當約拿承認他是敬畏創造天地之主的人時，他其實也是在對自己的心說話。有時候，我們只需要停下來，宣告我們是屬神的，這份身分的認同，會給我們勇氣去面對錯誤，並重新回到神的懷抱。<br><br>神宣告我們是祂的孩子，這印記永遠刻在我們身上。祂要我們不要讓失敗定義自己，讓我們的真實身分——蒙愛的神兒女——來引導我們前面的路。",
+                q1: "在職場或生活中，你容易忘記自己是「敬畏耶滿華」的人嗎？",
+                q2: "今天，你可以如何向別人或向自己重新確認你屬神的身分？",
+                prayer: "天父，多謝祢，就算我軟弱退後，祢都冇收回我神兒女嘅身分。求祢幫我記住，我係屬祢嘅，等我喺人前人後，都活出敬畏祢嘅生命。阿們。"
+            },
+            {
+                day: 8,
+                title: "敬畏與見證",
+                scriptureRef: "約拿書 1:10",
+                scriptureText: "他們就大大懼怕，對他說：你做的是甚麼事呢？他們已經知道他躲避耶和華，因為他告訴了他們。",
+                content: "水手們聽見約拿是敬畏創造天地海的神，又知道他正在逃避這位神，就大大懼怕。他們震驚於一個信徒竟然會做出違背自己信仰的事。<br><br>這節經文提醒我們，我們生命的見證對身邊的人有著極大的影響。當我們口稱信主，行為卻與信仰不符時，未信主的人也會感到困惑。但神的奇妙在於，即使是約拿這樣失敗的見證，神依然能使用它來讓外邦人認識祂的威嚴。我們不完美，但只要我們誠實面對神，神就能使用我們。<br><br>神告訴我們，我們的坦誠往往比偽裝的完美更能見證祂的恩典。當我們誠實面對自己的軟弱時，別人就能看見神真實的工作。",
+                q1: "你覺得自己的行為，能幫助身邊的人更認識神，還是讓他們困惑？",
+                q2: "如果有人問起你的信仰與行為不一致時，你會如何坦誠面對？",
+                prayer: "主啊，我承認我有時言行不一，求祢赦免我。求祢幫我做一個誠實嘅人，就算喺別人面前承認自己嘅軟弱，都願意高舉祢嘅真實同偉大。阿們。"
+            },
+            {
+                day: 9,
+                title: "承擔責任的勇氣",
+                scriptureRef: "約拿書 1:11-12",
+                scriptureText: "他們問他說：我們當向你怎樣行，使海浪平靜呢？這話是因海浪越發翻騰。他對他們說：你們將我抬起來，拋在海中，海就平靜了；我知道你們遭這大風是因我的緣故。",
+                content: "風浪越來越大，約拿沒有將責任推卸給別人或環境。他勇敢地承認是因他的緣故，並提出將自己拋下海。這是一個自我犧牲的決定，也是他順服神主權的開始。<br><br>在困難和衝突中，我們很容易找藉口推卸責任。但屬靈的成長，往往始於我們願意為自己的選擇承擔後果。約拿願意犧牲自己來平息風浪，這隱含了基督的影子——耶穌為我們的罪被釘十字架，平息了神公義的忿怒。當我們願意順服神並承擔責任時，平靜就會來到。<br><br>神喜悅我們勇敢面對自己的錯誤。當我們放下自我保護，把結果交託給祂時，我們會發現祂的恩典比海浪更廣闊。",
+                q1: "最近有沒有甚麼事情，是你需要勇敢地說「是因我的緣故」並承擔責任的？",
+                q2: "將自己交給神處理，對你現在面對的難題有甚麼幫助？",
+                prayer: "主耶穌，賜我勇氣去面對自己嘅過失，唔再推卸責任。我願意將自己同埋我所面對嘅爛攤子，全部交託喺祢手中，因為祢係平息風浪嘅主。阿們。"
+            },
+            {
+                day: 10,
+                title: "人的努力與神的旨意",
+                scriptureRef: "約拿書 1:13-14",
+                scriptureText: "然而那些人竭力盪槳，要把船攏岸，卻是不能，因為海浪越發向他們翻騰。他們便求告耶和華說：耶和華啊，我們懇求你，不要因這人的性命使我們死亡，不要使流無辜血的罪歸與我們；因為你耶和華是隨自己的意旨行事。",
+                content: "水手們心腸很好，不想拋約拿下海，他們竭力盪槳想要靠岸，但海浪卻更猛烈。最後他們明白人的努力無法對抗神的旨意，於是他們轉向耶和華禱告，承認神的主權。<br><br>很多時候，我們遇到困難時，第一反應也是竭力盪槳——靠自己的聰明、人脈和努力去解決。但如果事情的方向偏離了神的心意，再多的努力也是徒勞。水手們最後放下了船槳，舉起手來禱告。這教導我們，順服神的旨意，比盲目地用力盪槳更為重要。<br><br>神問我們是不是划得很累了。祂要我們停下來，尋求祂的心意。神的意旨是美好的，順服祂，我們就不必在風浪中白費力氣。",
+                q1: "你現在是否正在為某件事竭力盪槳，卻感到非常疲憊無力？",
+                q2: "放下你自己的方法，轉向神禱告，你會感受到甚麼不同？",
+                prayer: "天父，我有時真係好硬頸，係都要用自己嘅方法去解決問題。求祢俾我學識放低手上嘅槳，安靜喺祢面前，順服祢嘅心意同帶領。阿們。"
+            },
+            {
+                day: 11,
+                title: "風浪平息，敬畏生發",
+                scriptureRef: "約拿書 1:15-16",
+                scriptureText: "他們遂將約拿抬起，拋在海中，海的狂浪就平息了。那些人便大大敬畏耶和華，向耶和華獻祭，並且許願。",
+                content: "當約拿被拋下海，翻騰的海浪奇蹟般地瞬間平息。水手們親眼見證了這位神的大能，他們從畏懼風暴，轉變為大大敬畏耶和華，並向祂獻祭許願。<br><br>神不僅在管教約拿，祂也在這過程中拯救了這群外邦水手，讓他們認識了真神。這就是神奇妙的作為，祂能將我們的軟弱和錯誤，轉化為彰顯祂榮耀的機會。當我們順服神的安排，哪怕看起來像是失去了所有，神卻能在其中成就出人意外的平安與拯救。<br><br>神的作為常常超越我們的想像。即使在我們看似最失敗的時刻，神也能從中結出榮耀的果子。祂要我們相信，祂是使風浪平息的主。",
+                q1: "你曾經在經歷過極大的風波後，對神產生了更深的敬畏嗎？",
+                q2: "這個故事如何幫助你用更寬廣的角度去看待生命中的起伏？",
+                prayer: "主啊，祢真係好奇妙，祢竟然可以用我嘅軟弱去成就祢嘅作為。當風浪平息嘅時候，求祢令我對祢嘅敬畏更加深，一生一世讚美祢。阿們。"
+            },
+            {
+                day: 12,
+                title: "神恩典的預備",
+                scriptureRef: "約拿書 1:17",
+                scriptureText: "耶和華安排一條大魚吞了約拿，他在魚腹中三日三夜。",
+                content: "約拿被拋下海，本該溺水而死，但神安排了一條大魚吞下他。這條魚不是懲罰的刑具，而是神保守約拿生命的工具。約拿在黑暗的魚腹中度過了三日三夜。<br><br>在人生的低谷，當我們覺得被黑暗吞噬、無路可走時，我們往往覺得神拋棄了我們。但其實，那個讓你感到不舒服的魚腹環境，正是神為你預備的保護所。在那裡，神切斷了我們與外界的干擾，給我們時間與空間去安靜、反省，並經歷祂的同在。<br><br>神有時把我們放在幽暗的地方，不是為了懲罰我們，而是為了擁抱我們。在這個安靜的時刻，神要親自修復我們受傷的靈魂。",
+                q1: "你現在的生活中，有沒有一個看似幽暗、受限制，但其實是神在保護你的「魚腹」？",
+                q2: "在安靜的環境中，你更願意抱怨，還是更願意反省與尋求神？",
+                prayer: "天父，多謝祢嘅安排，就算喺最黑暗嘅環境，祢都冇撇低我。求祢幫我喺呢個受限制嘅空間裡面，安靜自己，深深咁經歷祢嘅同在同醫治。阿們。"
+            },
+            {
+                day: 13,
+                title: "患難中的呼求",
+                scriptureRef: "約拿書 2:1-2",
+                scriptureText: "約拿在魚腹中禱告耶和華他的神，說：我遭遇患難求告耶和華，你就應允我；從陰間的深處呼求，你就俯聽我的聲音。",
+                content: "在魚腹中，約拿終於開口向神禱告。他形容自己像是在陰間的深處，但即使在這樣絕望的境地，他發現神依然垂聽了他的呼求。<br><br>神從來不會因為我們走錯了路，就掩耳不聽我們的禱告。相反，當我們在患難中真實地呼求祂時，祂的耳朵總是敞開的。禱告不需要華麗的詞藻，也不需要在完美的環境中進行。只要我們的心轉向神，哪怕是在最深的谷底，神也必應允。<br><br>神聽見了我們的呼求。無論我們掉得有多深，神的恩典都能觸及我們。只要我們願意開口，神就與我們同在。",
+                q1: "你在患難中最真誠的一次禱告是怎樣的經歷？",
+                q2: "知道神在陰間的深處依然垂聽禱告，這帶給你甚麼安慰？",
+                prayer: "主耶穌，多謝祢聽我嘅禱告。就算我跌到好低好低，甚至覺得自己冇面目見祢，只要我肯呼求，祢依然會應允。求祢加添我禱告嘅信心。阿們。"
+            },
+            {
+                day: 14,
+                title: "看見神的手",
+                scriptureRef: "約拿書 2:3",
+                scriptureText: "你將我投下深淵，就是海的深處；大水環繞我，你的波浪洪濤都漫過我身。",
+                content: "表面上看，是水手將約拿拋下海；但在約拿的禱告中，他清楚地看見是你（神）將我投下深淵。他明白這一切的遭遇，背後都有神的主權在運作。<br><br>在逆境中，我們很容易埋怨人或環境。但靈性成熟的表現，是能夠在一切的遭遇中看見神的手。當我們知道是神允許這些波浪洪濤漫過我們時，我們就不會絕望，因為知道掌管風浪的神，必定有祂塑造我們的美意。<br><br>神提醒我們不要只看著眼前的困難和傷害我們的人。祂要我們抬起頭來，看見祂慈愛的手正在這一切的背後，為了要將我們塑造成祂合用的器皿。",
+                q1: "面對最近的挫折，你是在埋怨環境，還是看見神允許這事發生的美意？",
+                q2: "承認神在你逆境中的主權，如何改變你的心態？",
+                prayer: "天父，我承認我有時淨係睇到眼前嘅困難同埋怨身邊嘅人。求祢開我嘅屬靈眼睛，俾我喺波浪洪濤之中，依然睇見祢慈愛同掌權嘅手。阿們。"
+            },
+            {
+                day: 15,
+                title: "決心仰望",
+                scriptureRef: "約拿書 2:4",
+                scriptureText: "我說：我從你眼前雖被驅逐，我仍要仰望你的聖殿。",
+                content: "約拿感到自己彷彿被神驅逐，遠離了神的同在。但在這種極度孤絕的感受中，他做了一個意志上的決定：我仍要仰望你的聖殿。這是一個不憑眼見，單憑信心的宣告。<br><br>在屬靈的低潮期，我們有時會感覺不到神，覺得自己被遺棄了。這種感覺很真實，但感覺不等於真理。在這種時刻，我們需要學習約拿，用信心作出選擇：我仍要仰望。轉向神，定睛在祂的信實上，這就是突破黑暗的關鍵。<br><br>神問我們，當感覺不到祂的時候，是否還願意相信祂。祂要我們不要讓感覺主導信仰，要堅定地仰望祂，因為祂從未離開過我們。",
+                q1: "你曾在感覺不到神的時候，仍選擇繼續仰望祂嗎？",
+                q2: "今天，有甚麼困難是你需要用意志宣告「我仍要仰望神」的？",
+                prayer: "主啊，有時候我真係感覺唔到祢嘅同在，覺得好孤單。但我今日要立志，就算環境再差、心情再低落，我仍然要定睛仰望祢嘅信實。阿們。"
+            },
+            {
+                day: 16,
+                title: "從死蔭中拯救",
+                scriptureRef: "約拿書 2:5-6",
+                scriptureText: "諸水環繞我，幾乎淹沒我；深淵圍住我，海草纏繞我的頭。我下到山根，地的門將我永遠關住。耶和華我的神啊，你卻將我的性命從坑中救出來。",
+                content: "約拿生動地描述了溺水的窒息感：被海草纏繞，下到海底，彷彿被死亡的門永遠關住。但在最絕望的死角，他宣告神將他的生命從坑中救出來。<br><br>這是一幅死裡復活的圖畫。我們的人生也可能經歷像被海草死死纏繞的困境，無法自拔，似乎再也沒有希望。但我們的神是使無變為有、叫死人復活的神。當我們走到人的盡頭，神拯救的大能才剛剛開始展現。<br><br>神宣告沒有任何一個坑深到祂的手夠不到，也沒有任何一道死亡的門是祂打不開的。只要把絕望交給祂，神能賜給我們全新的生命。",
+                q1: "你有沒有哪一次經歷，是覺得完全無望，但神卻將你「救出來」的？",
+                q2: "這段經文如何鼓勵你去面對目前看似無法解開的死結？",
+                prayer: "天父，當我覺得被困難死死纏住、唞唔到氣嘅時候，求祢俾我記住，祢係叫死人復活嘅神。我深信祢嘅手必定會將我從深坑中救出嚟。阿們。"
+            },
+            {
+                day: 17,
+                title: "在發昏時想念神",
+                scriptureRef: "約拿書 2:7",
+                scriptureText: "我心在我裡面發昏的時候，我就想念耶和華。我的禱告進入你的聖殿，達到你的面前。",
+                content: "在極度疲憊和意識模糊之際，約拿做了一件事：他想念耶和華。這個簡單的意念，化作了穿透深海的禱告，直達神在天上的聖殿。<br><br>當我們身心俱疲、壓力大到無法思考時，我們不需要冗長的祈禱文，只需要在心裡深深地想念神。回想祂過去的作為，思想祂慈愛的屬性。神體恤我們的軟弱，即使是一聲微弱的嘆息，一個向著神的微小意念，祂都看重，並會親自聆聽。<br><br>神體恤我們的疲憊。我們不用勉強說很多話，只要在心裡安靜地想念神。神與我們同在，祂的平安要覆蓋我們的疲憊。",
+                q1: "當你心裡發昏、極度疲憊時，你通常會想念甚麼或誰？",
+                q2: "今天試著花幾分鐘，甚麼都不做，只是單單在心裡「想念耶和華」。",
+                prayer: "主耶穌，有時我真係好攰，攰到連祈禱都講唔出聲。求聖靈喺我發昏嘅時候，提醒我將心轉向祢，單單想念祢嘅慈愛同恩典。阿們。"
+            },
+            {
+                day: 18,
+                title: "虛無之神與真實的愛",
+                scriptureRef: "約拿書 2:8",
+                scriptureText: "那信奉虛無之神的人，離棄憐愛他們的主。",
+                content: "約拿在魚腹中領悟到一個深刻的真理：世上一切偶像（虛無之神）都無法拯救人，倚靠這些，只會讓人錯失神真實的憐愛。<br><br>我們今天可能不會去拜木頭石頭，但我們心中依然有許多虛無之神——金錢、地位、別人的認同、或是對自己能力的自信。當我們把安全感建立在這些終將消逝的事物上時，我們其實是在遠離那位真正深愛我們、能賜我們永遠平安的主。唯有放下這些虛浮的依靠，我們才能完全擁抱神的愛。<br><br>神提醒我們不要在那些不能滿足心靈的事物上尋找安全感。祂是那憐愛我們的主，呼喚我們回到祂那裡，因為只有神能給我們真正穩妥的依靠。",
+                q1: "你生命中，有沒有甚麼事物不知不覺成了你依賴的「虛無之神」？",
+                q2: "你要如何放下這些不實在的依靠，重新緊抱神的憐愛？",
+                prayer: "天父，求祢赦免我，我有時會將安全感放喺金錢或者成就上面，忘記咗祢先至係我真正嘅倚靠。求祢幫我放低呢啲虛無嘅偶像，單單信靠祢。阿們。"
+            },
+            {
+                day: 19,
+                title: "救恩出於耶和華",
+                scriptureRef: "約拿書 2:9",
+                scriptureText: "但我必用感謝的聲音獻祭與你。我所許的願，我必償還。救恩出於耶和華。",
+                content: "約拿的禱告以感恩和讚美結束。他明白自己無法自救，宣告了整卷書的核心信息：救恩出於耶和華。<br><br>無論是從海中得救，還是我們靈魂的得救，都不是靠我們自己的好行為或功勞，而是完全出於神的恩典。當我們深刻體會到自己是多麼不配，卻又蒙了何等大的拯救時，我們自然會湧出感謝的聲音，並願意將自己的生命再次奉獻給神，去完成祂的託付。<br><br>神告訴我們，我們的得救是祂白白的恩典。當我們用感恩的心回應祂時，生命就會充滿喜樂和力量。神差遣我們帶著這份感恩，活出祂賜的新生命。",
+                q1: "你有多久沒有單單為了神的救恩而向祂獻上感謝的聲音了？",
+                q2: "「救恩出於耶和華」這個真理，如何幫助你面對自己的不完美？",
+                prayer: "主啊，多謝祢嘅拯救，一切都係出於祢嘅恩典，唔係靠我自己嘅努力。我願意用感恩嘅心，將自己獻俾祢，為主而活。阿們。"
+            },
+            {
+                day: 20,
+                title: "神話語的權能",
+                scriptureRef: "約拿書 2:10",
+                scriptureText: "耶和華吩咐魚，魚就把約拿吐在旱地上。",
+                content: "當約拿的心完全降服，神的拯救立刻臨到。神只是簡單地吩咐，那條大魚就乖乖聽命，將約拿安全地送回了旱地。<br><br>神的話語充滿了創造與掌管的權能。連海底的大魚都順服神的命令，何況是我們呢？當我們處在人生的困境中，只要神的一句話，環境就能夠改變。這給我們極大的安慰：我們所信的神，是宇宙萬物都聽從祂吩咐的神。<br><br>神的話語安定在天，帶著改變一切的能力。神問我們是否願意像這條魚一樣，順服祂的吩咐，成為祂施恩的器皿。",
+                q1: "看見大自然（大魚）對神的順服，對你有甚麼啟發？",
+                q2: "你相信神的一句話，能夠改變你目前看起來無法改變的環境嗎？",
+                prayer: "天父，祢係掌管萬有嘅主，連大魚都聽祢吩咐。求祢賜我一顆順服嘅心，等我嘅生命都可以完全聽從祢嘅帶領，見證祢嘅大能。阿們。"
+            },
+            {
+                day: 21,
+                title: "給予第二次機會的神",
+                scriptureRef: "約拿書 3:1-2",
+                scriptureText: "耶和華的話二次臨到約拿說：你起來！往尼尼微大城去，向其中的居民宣告我所吩咐你的話。",
+                content: "約拿曾經違背神、逃跑、失敗，但神並沒有放棄他。神的話二次臨到約拿，重新將原來的使命交給他。神是一位樂意給人第二次機會的神。<br><br>我們常常因為過去的失敗、軟弱或犯罪，而覺得自己不配再事奉神，甚至覺得神不會再用我們。但神的恩典大過我們的過犯。祂不僅赦免我們，更重新信任我們。神不尋找完美的人，祂尋找願意悔改、重新站起來的人。<br><br>神鼓勵我們不要讓過去的失敗定義未來。祂已經赦免了我們，現在，祂要我們帶著祂給的新機會，勇敢地起來，去完成祂託付的事。",
+                q1: "你是否曾因為失敗，而覺得自己再也不能為神作甚麼？",
+                q2: "今天，神在哪件事上正在給你「第二次機會」？",
+                prayer: "主耶穌，多謝祢係一位賜第二次機會嘅神。就算我曾經失敗跌倒，祢都冇放棄我。我願意重新企起身，再次順服祢嘅差遣。阿們。"
+            },
+            {
+                day: 22,
+                title: "順服的行動",
+                scriptureRef: "約拿書 3:3-4",
+                scriptureText: "約拿便照耶和華的話起來，往尼尼微去。這尼尼微是極大的城，有三日的路程。約拿進城走了一日，宣告說：再等四十日，尼尼微必傾覆了。",
+                content: "這一次，約拿沒有猶豫，他照耶和華的話去了。尼尼微城很大，他的宣告也很簡短，但他切實地履行了先知的責任。<br><br>真正的悔改，會帶出順服的行動。約拿可能還是不喜歡尼尼微人，但他選擇了順服神。有時候，順服並不代表我們完全明白神的計畫，也不代表我們立刻愛上那個任務，順服是將神的話語放在我們自己的喜好之上。當我們踏出順服的一步，神就會負責接下來的工作。<br><br>神提醒我們，順服不是一種感覺，而是一種選擇。當我們選擇照著神的話去行，我們就會看見祂的榮耀如何在順服的腳步中彰顯。",
+                q1: "在你目前的生活中，神要你照著祂的話去採取甚麼行動？",
+                q2: "即使心中還有疑慮，你願意先踏出順服的第一步嗎？",
+                prayer: "天父，求祢幫我放低自己嘅喜好同藉口，真真正正照祢嘅話去行。就算前面嘅路唔容易，我都願意選擇順服，求祢帶領。阿們。"
+            },
+            {
+                day: 23,
+                title: "神話語的大能",
+                scriptureRef: "約拿書 3:5",
+                scriptureText: "尼尼微人信服神，便宣告禁食，從最大的到至小的都穿麻衣。",
+                content: "約拿短短的宣告，竟然在這座邪惡的大城中引發了屬靈的大地震。尼尼微人聽見信息，就立刻信服神，並且全城上下都謙卑禁食。<br><br>這是一個極大的神蹟！改變人心的不是約拿的口才，而是神話語本身的大能，加上聖靈在人心中動工。這提醒我們，在傳福音或與人分享信仰時，我們不需要依靠自己的聰明才智，只要忠心地傳遞神的真理，神親自會結出果子。<br><br>神要我們不要低估祂話語的力量。我們只管忠心地播種，神會負責讓種子在最堅硬的土壤裡發芽生長。",
+                q1: "你是否曾因為覺得自己口才不好，而不敢向人分享信仰？",
+                q2: "看到尼尼微人的改變，如何增加你對神話語大能的信心？",
+                prayer: "主啊，原來改變人心嘅係祢嘅話語，而唔係我嘅能力。求祢加添我嘅信心，等我勇敢向人分享祢嘅真理，將結果交託俾祢。阿們。"
+            },
+            {
+                day: 24,
+                title: "從上而下的謙卑",
+                scriptureRef: "約拿書 3:6-7",
+                scriptureText: "這信息傳到尼尼微王的耳中，他就下了寶座，脫下朝服，披上麻布，坐在灰中。他又使人遍告尼尼微通城說：王和大臣有令，人不可嘗甚麼，牲畜、牛羊不可吃草，也不可喝水。",
+                content: "悔改的浪潮傳到了王宮。那位不可一世的尼尼微王，竟然走下寶座，脫下華貴的朝服，穿上粗糙的麻布坐在灰中。他帶頭示範了最深切的謙卑與悔罪。<br><br>真正的悔改，要求我們離開生命中自以為是的寶座，脫下驕傲的朝服。在神面前，我們所有的地位、成就和面子都算不得甚麼。當一個領導者願意在神面前降卑，他就能帶動整個群體的復興。神阻擋驕傲的人，賜恩給謙卑的人。<br><br>神問我們生命中的寶座上坐著的是誰，是我們自己，還是神。祂呼喚我們放下驕傲，謙卑地來到祂面前，因為這才是蒙恩的開始。",
+                q1: "你生命中，有沒有甚麼是你不願意放下的寶座或朝服？",
+                q2: "在家庭或職場中，你能否示範這種在神面前的謙卑？",
+                prayer: "天父，我有時真係好驕傲，唔肯放低自己嘅面子。求祢幫我學似尼尼微王咁，行落自己嘅寶座，謙卑俯伏喺祢面前，承認祢先至係主。阿們。"
+            },
+            {
+                day: 25,
+                title: "真實的悔改",
+                scriptureRef: "約拿書 3:8-9",
+                scriptureText: "人與牲畜都當披上麻布；人要切切求告神。各人回頭離開所行的惡道，丟棄手中的強暴。或者神轉意後悔，不發烈怒，使我們不至滅亡，也未可知。",
+                content: "尼尼微王的命令指出，悔改不只是外表的禁食，更重要的是內在的轉變：要切切求告神，並且在行為上離開惡道，丟棄強暴。他們不敢將神的赦免視為理所當然，只帶著謙卑的態度來仰望神。<br><br>神看重的是我們實際的行為改變。如果只有宗教儀式，卻沒有在生活中離開罪惡，這並不是真悔改。真實的悔改包含了對罪的痛悔、對神的懇求，以及行為上一百八十度的轉向。同時，我們應當帶著敬畏的心，仰望神白白的恩典。<br><br>神察看的不是我們的外表，而是我們的心和所行的道。祂問我們是否願意為了祂，放下手中那些不討祂喜悅的事。",
+                q1: "你的悔改，是停留在言語上，還是有實際行為的轉變？",
+                q2: "今天，神感動你要離開哪一條惡道，或丟棄甚麼習慣？",
+                prayer: "主耶穌，求祢鑒察我嘅心。我唔想做一個只有表面敬虔嘅人。求祢賜我力量，真真正正離開唔討祢喜悅嘅習慣，活出新生命。阿們。"
+            },
+            {
+                day: 26,
+                title: "神滿有憐憫",
+                scriptureRef: "約拿書 3:10",
+                scriptureText: "於是神察看他們的行為，見他們離開惡道，他就後悔，不把所說的災禍降與他們了。",
+                content: "當神看見尼尼微人真實的悔改行動，祂就轉意，收回了原定的災禍。神的審判從來不是最終目的，拯救和挽回才是祂真正的心意。<br><br>這裡的神後悔，不是說神做錯了決定，而是指神因著人的回轉，改變了對待人的方式。這向我們啟示了一位充滿彈性、滿有慈愛的天父。祂不是冷酷無情的判官，只要我們願意真實地回轉，祂總是樂意施恩赦免。在神那裡，永遠有重新開始的盼望。<br><br>神的怒氣不過是轉眼之間，祂的恩典乃是一生之久。只要我們願意轉向神，祂的雙手隨時準備好要擁抱我們。",
+                q1: "認識到神是這樣一位樂意施恩赦免的主，帶給你甚麼安慰？",
+                q2: "你是否願意將這個充滿恩典的神，介紹給身邊犯了錯的人？",
+                prayer: "天父，多謝祢充滿慈愛同憐憫。知道祢時刻願意赦免回轉嘅人，我心裡面充滿平安。求祢幫我每日都緊緊跟隨祢，活喺祢嘅恩典入面。阿們。"
+            },
+            {
+                day: 27,
+                title: "當神的恩典不合我意",
+                scriptureRef: "約拿書 4:1-2",
+                scriptureText: "這事約拿大大不悅，且甚發怒，就禱告耶和華說：耶和華啊，我在本國的時候豈不是這樣說嗎？我知道你是有恩典、有憐憫的神，不輕易發怒，有豐盛的慈愛，並且後悔不降所說的災，所以我急速逃往他施去。",
+                content: "尼尼微全城蒙恩，約拿卻大發脾氣。他誠實地說出了逃跑的原因：他太了解神充滿慈愛了，他怕神會饒恕這些以色列的死敵。他寧願這些人被毀滅。<br><br>約拿的神學知識非常正確，但他卻沒有神的心腸。有時候，我們也會像約拿一樣，希望神對我們施恩典，卻希望神對那些我們不喜歡的人施行嚴厲的審判。當神的恩典臨到我們認為不配的人身上時，我們的心態就暴露了。神要我們不僅認識祂的屬性，更要體會祂的愛。<br><br>神的恩典比我們想像的還要寬廣。神問我們是否願意放下偏見，用祂的眼光去看待那些我們認為不可愛的人。",
+                q1: "你曾否因為看見神祝福了你不喜歡的人，而感到心裡不平衡？",
+                q2: "有正確的神學知識，卻沒有愛心，這對我們有甚麼警惕？",
+                prayer: "主啊，我承認我有時心胸好狹窄，只係想神恩待我同我鍾意嘅人。求祢將祢愛世人嘅心腸賜俾我，等我嘅心可以同祢嘅心跳一致。阿們。"
+            },
+            {
+                day: 28,
+                title: "神溫柔的引導",
+                scriptureRef: "約拿書 4:3-4",
+                scriptureText: "耶和華啊，現在求你取我的命吧！因為我死了比活著還好。耶和華說：你這樣發怒合乎理嗎？",
+                content: "約拿氣急敗壞地向神求死，覺得世界沒有按照他的期望運作，活著也沒意思。面對先知的無理取鬧，神沒有責罵，只是溫和地問：你這樣發怒合乎理嗎？<br><br>當我們情緒失控、對神發脾氣時，神是一位極有耐心的導師。祂用溫柔的問題，引導我們去反省自己情緒的根源。我們發怒，往往是因為我們的自我中心、我們的計畫被打亂。神容許我們表達情緒，但祂希望我們能平靜下來，誠實地面對內心真實的光景。<br><br>神接納我們的情緒，但祂更關心我們的心。當我們憤怒的時候，神要我們停下來想一想，這怒氣是出於神的公義，還是出於我們的自我。",
+                q1: "回想最近一次你大發脾氣，背後真正的原因是甚麼？",
+                q2: "當神問你「你這樣發怒合乎理嗎？」你會如何誠實地回答？",
+                prayer: "天父，多謝祢嘅溫柔同忍耐。就算我發脾氣、唔講理，祢都冇撇低我。求聖靈光照我，俾我睇清自己發怒嘅真正原因，順服祢嘅主權。阿們。"
+            },
+            {
+                day: 29,
+                title: "旁觀者的冷漠",
+                scriptureRef: "約拿書 4:5",
+                scriptureText: "於是約拿出城，坐在城的東邊，在那裡為自己搭了一座棚，坐在棚的蔭下，要看看那城究竟如何。",
+                content: "約拿沒有回答神的問題。他選擇走到城外，搭了個棚子，冷眼旁觀，心裡大概還存著一絲希望：看看神到底會不會真的毀滅這座城。<br><br>這是一種屬靈的冷漠。約拿只關心自己是否舒服，只關心自己的預言是否應驗，卻對這座城裡數十萬人的生死毫不關心。我們有時也會成為社會或教會中的旁觀者，對別人的需要冷眼相對。神不希望我們坐在安逸的棚子裡看戲，祂呼召我們走入人群，分享祂的愛。<br><br>神呼籲我們不要做一個冷漠的旁觀者。祂要我們拆掉為自己搭建的那個安逸的棚子，去關心那些正在痛苦和迷失中的人。",
+                q1: "在教會或生活中，你是否經常採取事不關己，冷眼旁觀的態度？",
+                q2: "甚麼是你心中的那個「棚子」？",
+                prayer: "主耶穌，對唔住，我有時真係好冷漠，淨係顧自己舒服。求祢拆毀我心中自私嘅棚子，賜我憐憫嘅心，去關心身邊有需要嘅人。阿們。"
+            },
+            {
+                day: 30,
+                title: "恩典的實物教材",
+                scriptureRef: "約拿書 4:6-8",
+                scriptureText: "耶和華神安排一棵蓖麻，使其發生高過約拿，影兒遮蓋他的頭，救他脫離苦楚；約拿因這棵蓖麻大大喜樂。次日黎明，神卻安排一條蟲子咬這蓖麻，以致枯槁... 炎熱的東風，日頭曝曬約拿的頭，使他發昏，他就為自己求死...",
+                content: "神用一棵蓖麻樹為約拿遮蔭，約拿就大大喜樂；隔天神安排蟲子咬死蓖麻，並吹起熱風，約拿就痛苦地求死。他的情緒完全被一棵植物左右。<br><br>神透過這棵蓖麻，給約拿上了一堂深刻的課。我們的情緒常像約拿一樣，因為一點點屬世的好處就大大喜樂，失去一點點舒適就崩潰抱怨。我們很容易愛上神賜的禮物，卻忽略了那賜恩典的主。神容許環境改變，是為了讓我們看到自己的安全感放錯了位置。<br><br>神問我們的喜怒哀樂是建立在會枯萎的蓖麻上，還是建立在永不改變的祂身上。神渴望成為我們喜樂和安穩的唯一泉源。",
+                q1: "你最近的情緒起伏，是否也常常被一些短暫的外在環境所左右？",
+                q2: "如何將你的安全感從物質的舒適轉移到永恆的神身上？",
+                prayer: "天父，我承認我嘅情緒好容易受環境影響，得失心好重。求祢幫我將眼光定睛喺祢身上，知道祢先至係我生命中不變嘅倚靠。阿們。"
+            },
+            {
+                day: 31,
+                title: "神浩大的愛惜",
+                scriptureRef: "約拿書 4:9-11",
+                scriptureText: "神對約拿說：你因這棵蓖麻發怒合乎理嗎？...耶和華說：這蓖麻不是你栽種的，也不是你培養的，一夜發生，一夜乾死，你尚且愛惜；何況這尼尼微大城，其中不能分辨左手右手的有十二萬多人，並有許多牲畜，我豈能不愛惜呢？",
+                content: "神指出了約拿的荒謬：你對一棵沒有靈魂的植物都這麼愛惜，何況這座城裡有十二萬無知的嬰孩和無數的生命，作為創造主，我豈能不愛惜呢？<br><br>《約拿書》以神的這句問話作為結尾，沒有寫下約拿的回答。這個開放式的結局，其實是神在向歷代的讀者（包括你和我）發問。神的心跳是愛惜那些失喪的靈魂。我們是否願意放下自己的偏見、冷漠和安逸，去體會神那長闊高深、超越一切的愛？<br><br>這是神對這個世界的宣告：祂愛惜他們。神問我們，是否願意與祂一起，去愛惜這座城市、愛惜這些迷失的人。",
+                q1: "神對尼尼微的「愛惜」，如何改變你對福音、對失喪靈魂的看法？",
+                q2: "面對約拿書最後的這個問號，你會用怎樣的行動來回答神？",
+                prayer: "主啊，祢嘅愛真係偉大到我無法想像。求祢將祢「愛惜」靈魂嘅心腸賜俾我，等我唔再做一個逃跑嘅約拿，而係用生命去回應祢嘅大愛。阿們。"
+            }
+        ];
+
+        // UI State
+        let currentDay = 1;
+
+        // Elements
+        const daysListEl = document.getElementById('days-list');
+        const contentContainer = document.getElementById('content-container');
+        const menuToggle = document.getElementById('menu-toggle');
+        const sidebar = document.getElementById('sidebar');
+
+        // Initializer
+        function init() {
+            // Get today's date (1-31) to set as default day
+            const today = new Date().getDate();
+            currentDay = today <= 31 ? today : 1; 
+
+            renderSidebar();
+            loadDay(currentDay);
+
+            // Mobile menu toggle
+            menuToggle.addEventListener('click', () => {
+                sidebar.classList.toggle('-translate-x-full');
+            });
+            
+            // Handle beforeunload to stop speech
+            window.addEventListener('beforeunload', () => {
+                if(window.speechSynthesis) window.speechSynthesis.cancel();
+            });
+        }
+
+        // Render Sidebar Days
+        function renderSidebar() {
+            daysListEl.innerHTML = '';
+            devotions.forEach(devotion => {
+                const btn = document.createElement('button');
+                btn.className = `day-btn w-full text-left px-6 py-3 text-sm transition-colors duration-200 hover:bg-white/10 ${devotion.day === currentDay ? 'active text-purple-300' : 'text-gray-300'}`;
+                btn.innerHTML = `Day ${devotion.day}`;
+                btn.onclick = () => {
+                    if (window.speechSynthesis) window.speechSynthesis.cancel();
+                    loadDay(devotion.day);
+                    if (window.innerWidth < 768) {
+                        sidebar.classList.add('-translate-x-full');
+                    }
+                };
+                daysListEl.appendChild(btn);
+            });
+        }
+        
+        // Reset all play buttons to default state
+        function resetAllPlayButtons() {
+            document.querySelectorAll('.play-btn path').forEach(path => {
+                path.setAttribute('d', 'M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z M21 12a9 9 0 11-18 0 9 9 0 0118 0z');
+            });
+        }
+        
+        // Play TTS
+        window.toggleSpeech = function(rawText, btnId) {
+            if (!('speechSynthesis' in window)) {
+                return; // Silently fail if not supported
+            }
+            
+            const btn = document.getElementById(btnId);
+            if (!btn) return;
+            const iconPath = btn.querySelector('path');
+            
+            const cleanText = rawText.replace(/<[^>]*>?/gm, ''); // Strip HTML tags
+            
+            if (window.speechSynthesis.speaking) {
+                window.speechSynthesis.cancel();
+                resetAllPlayButtons();
+                if (window.currentPlayingBtn === btnId) {
+                    window.currentPlayingBtn = null;
+                    return;
+                }
+            }
+            
+            window.currentPlayingBtn = btnId;
+            const utterance = new SpeechSynthesisUtterance(cleanText);
+            utterance.lang = 'zh-HK'; // Cantonese
+            utterance.rate = 1.5; // 1.5x speed
+            
+            // Try to find a HK voice explicitly
+            const voices = window.speechSynthesis.getVoices();
+            const hkVoice = voices.find(v => v.lang === 'zh-HK' || v.lang === 'zh-TW');
+            if (hkVoice) {
+                utterance.voice = hkVoice;
+            }
+            
+            utterance.onstart = () => {
+                resetAllPlayButtons();
+                // Change to Stop icon
+                iconPath.setAttribute('d', 'M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z');
+            };
+            
+            utterance.onend = () => {
+                resetAllPlayButtons();
+                window.currentPlayingBtn = null;
+            };
+            
+            utterance.onerror = () => {
+                resetAllPlayButtons();
+                window.currentPlayingBtn = null;
+            };
+            
+            window.speechSynthesis.speak(utterance);
+        };
+
+        // Load content for a specific day
+        function loadDay(day) {
+            currentDay = day;
+            const data = devotions.find(d => d.day === day);
+            
+            // Fade out
+            contentContainer.classList.remove('opacity-100');
+            contentContainer.classList.add('opacity-0');
+
+            setTimeout(() => {
+                // Update sidebar UI
+                document.querySelectorAll('.day-btn').forEach(btn => {
+                    btn.classList.remove('active', 'text-purple-300');
+                    btn.classList.add('text-gray-300');
+                    if (btn.innerText === `Day ${day}`) {
+                        btn.classList.add('active', 'text-purple-300');
+                        btn.classList.remove('text-gray-300');
+                    }
+                });
+
+                // Prepare JS friendly string for onclick
+                const safeScriptureText = data.scriptureText.replace(/'/g, "\\'");
+                const safeContentText = data.content.replace(/'/g, "\\'").replace(/\n/g, ' ');
+                const safeAllText = `今日經文：${safeScriptureText}。靈修內容：${safeContentText}`;
+
+                // Inject Content
+                contentContainer.innerHTML = `
+                    <div class="mb-8 text-center flex flex-col items-center">
+                        <h2 class="text-purple-400 font-semibold tracking-widest uppercase text-sm mb-2">Day ${data.day}</h2>
+                        <h1 class="text-3xl md:text-4xl font-semibold mb-4 leading-snug">${data.title}</h1>
+                        <div class="inline-block bg-white/5 rounded-full px-4 py-1 text-sm text-gray-300 mb-6 font-semibold">
+                            ${data.scriptureRef}
+                        </div>
+                        
+                        <!-- 一鍵聆聽全文按鈕 -->
+                        <button id="tts-btn-all" onclick="toggleSpeech('${safeAllText}', 'tts-btn-all')" class="play-btn text-white bg-purple-600 hover:bg-purple-500 focus:outline-none flex items-center gap-2 px-6 py-3 rounded-full font-semibold transition-colors shadow-lg shadow-purple-500/30">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            一鍵聆聽全文
+                        </button>
+                    </div>
+
+                    <div class="glass-panel p-6 md:p-8 mb-8 border-l-4 border-l-purple-400 relative">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-lg font-semibold text-purple-200">今日經文</h3>
+                        </div>
+                        <p class="text-lg leading-relaxed text-gray-100 italic">「${data.scriptureText}」</p>
+                    </div>
+
+                    <div class="mb-10">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-xl font-semibold text-white">靈修內容</h3>
+                        </div>
+                        <div class="prose prose-invert max-w-none text-gray-300 leading-loose text-justify text-base md:text-lg">
+                            ${data.content}
+                        </div>
+                    </div>
+
+                    <div class="mb-10">
+                        <div class="flex items-center mb-4">
+                            <div class="w-8 h-8 rounded-full bg-purple-900/50 flex items-center justify-center mr-3 border border-purple-500/30">
+                                <svg class="w-4 h-4 text-purple-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            </div>
+                            <h3 class="text-xl font-semibold text-white">深度默想</h3>
+                        </div>
+                        <ul class="space-y-4 text-gray-300 bg-white/5 p-6 rounded-2xl">
+                            <li class="flex items-start">
+                                <span class="text-purple-400 mr-2 font-bold">1.</span>
+                                <span>${data.q1}</span>
+                            </li>
+                            <li class="flex items-start">
+                                <span class="text-purple-400 mr-2 font-bold">2.</span>
+                                <span>${data.q2}</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="glass-panel p-6 md:p-8 relative overflow-hidden">
+                        <div class="absolute top-0 right-0 w-32 h-32 bg-purple-500/10 rounded-full blur-3xl -mr-10 -mt-10"></div>
+                        <h3 class="text-xl font-semibold mb-4 text-white flex items-center">
+                            <svg class="w-5 h-5 mr-2 text-purple-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M14.707 10.293a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 111.414-1.414L9 12.586V5a1 1 0 012 0v7.586l2.293-2.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
+                            回應禱告
+                        </h3>
+                        <p class="text-gray-200 leading-relaxed italic">
+                            「${data.prayer}」
+                        </p>
+                    </div>
+                `;
+
+                // Fade in
+                contentContainer.classList.remove('opacity-0');
+                contentContainer.classList.add('opacity-100');
+                
+                // Scroll to top
+                document.querySelector('main').scrollTop = 0;
+            }, 300);
+        }
+
+        // Initialize voices on load to avoid delay
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.onvoiceschanged = function() {
+                window.speechSynthesis.getVoices();
+            };
+        }
+
+        // Run on load
+        window.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
