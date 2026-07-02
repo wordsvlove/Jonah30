@@ -22,18 +22,19 @@
             border-radius: 16px;
         }
 
-        .scrollbar-hide::-webkit-scrollbar {
-            display: none;
-        }
-        .scrollbar-hide {
-            -ms-overflow-style: none;
-            scrollbar-width: none;
-        }
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
+        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
 
         .day-btn.active {
             background-color: rgba(255, 255, 255, 0.15);
             border-left: 4px solid #a78bfa; 
             font-weight: 600;
+        }
+        
+        .speed-btn.active {
+            background-color: #a78bfa;
+            color: white;
+            border-color: #a78bfa;
         }
         
         .play-btn:hover {
@@ -52,23 +53,26 @@
         </button>
     </div>
 
-    <!-- Sidebar (Days Navigation) -->
-    <aside id="sidebar" class="w-64 glass-panel h-full flex-shrink-0 flex flex-col absolute md:relative z-40 transform -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out mt-14 md:mt-0 pb-14 md:pb-0 bg-[#141322] md:bg-transparent border-r border-white/10">
+    <!-- Sidebar -->
+    <aside id="sidebar" class="w-64 glass-panel h-full flex-shrink-0 flex flex-col absolute md:relative z-40 transform -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out mt-14 md:mt-0 bg-[#141322] md:bg-transparent border-r border-white/10">
         <div class="p-6 hidden md:block">
             <h1 class="text-xl font-semibold tracking-wider text-purple-300">約拿書靈修</h1>
             <p class="text-xs text-gray-400 mt-2">聽命與恩慈的生命對話</p>
         </div>
-        <div class="flex-1 overflow-y-auto scrollbar-hide py-2" id="days-list">
-            <!-- JavaScript will populate days here -->
-        </div>
+        <div class="flex-1 overflow-y-auto scrollbar-hide py-2" id="days-list"></div>
     </aside>
 
-    <!-- Main Content Area -->
+    <!-- Main Content -->
     <main class="flex-1 h-full overflow-y-auto p-6 md:p-12 mt-14 md:mt-0 relative">
         <div class="max-w-3xl mx-auto pb-20">
-            <div id="content-container" class="opacity-0 transition-opacity duration-500">
-                <!-- JavaScript will populate content here -->
+            <!-- Speed Control -->
+            <div class="flex items-center justify-center gap-4 mb-8">
+                <span class="text-sm text-gray-400">朗讀速度：</span>
+                <button onclick="setSpeed(1.0)" id="speed-1-0" class="speed-btn px-4 py-1.5 rounded-full border border-gray-600 text-sm font-semibold active transition-colors">1.0 倍速</button>
+                <button onclick="setSpeed(1.1)" id="speed-1-1" class="speed-btn px-4 py-1.5 rounded-full border border-gray-600 text-sm font-semibold transition-colors">1.1 倍速</button>
             </div>
+            
+            <div id="content-container" class="opacity-0 transition-opacity duration-500"></div>
         </div>
     </main>
 
@@ -141,7 +145,7 @@
                 scriptureRef: "約拿書 1:8-9",
                 scriptureText: "眾人對他說：請你告訴我們，這災臨到我們是因誰的緣故？你以何事為業？你從哪裡來？你是哪一國？屬哪一族的人？他說：我是希伯來人。我敬畏耶和華，那創造滄海旱地之天上的神。",
                 content: "面對水手們一連串的質問，約拿終於開口了。他沒有隱瞞，坦白宣告自己的身分：「我是希伯來人，我敬畏耶和華」。在逃跑的路上，他第一次重新確認了自己與神的關係。<br><br>無論我們軟弱跌倒了多少次，走偏了多遠，我們作為神兒女的身分永遠不會改變。當約拿承認他是敬畏創造天地之主的人時，他其實也是在對自己的心說話。有時候，我們只需要停下來，宣告我們是屬神的，這份身分的認同，會給我們勇氣去面對錯誤，並重新回到神的懷抱。<br><br>神宣告我們是祂的孩子，這印記永遠刻在我們身上。祂要我們不要讓失敗定義自己，讓我們的真實身分——蒙愛的神兒女——來引導我們前面的路。",
-                q1: "在職場或生活中，你容易忘記自己是「敬畏耶滿華」的人嗎？",
+                q1: "在職場或生活中，你容易忘記自己是「敬畏耶和華」的人嗎？",
                 q2: "今天，你可以如何向別人或向自己重新確認你屬神的身分？",
                 prayer: "天父，多謝祢，就算我軟弱退後，祢都冇收回我神兒女嘅身分。求祢幫我記住，我係屬祢嘅，等我喺人前人後，都活出敬畏祢嘅生命。阿們。"
             },
@@ -387,36 +391,36 @@
             }
         ];
 
-        // UI State
         let currentDay = 1;
+        let currentRate = 1.0;
 
-        // Elements
         const daysListEl = document.getElementById('days-list');
         const contentContainer = document.getElementById('content-container');
         const menuToggle = document.getElementById('menu-toggle');
         const sidebar = document.getElementById('sidebar');
 
-        // Initializer
         function init() {
-            // Get today's date (1-31) to set as default day
             const today = new Date().getDate();
             currentDay = today <= 31 ? today : 1; 
 
             renderSidebar();
             loadDay(currentDay);
 
-            // Mobile menu toggle
             menuToggle.addEventListener('click', () => {
                 sidebar.classList.toggle('-translate-x-full');
             });
             
-            // Handle beforeunload to stop speech
             window.addEventListener('beforeunload', () => {
                 if(window.speechSynthesis) window.speechSynthesis.cancel();
             });
         }
 
-        // Render Sidebar Days
+        function setSpeed(rate) {
+            currentRate = rate;
+            document.getElementById('speed-1-0').classList.toggle('active', rate === 1.0);
+            document.getElementById('speed-1-1').classList.toggle('active', rate === 1.1);
+        }
+
         function renderSidebar() {
             daysListEl.innerHTML = '';
             devotions.forEach(devotion => {
@@ -434,24 +438,22 @@
             });
         }
         
-        // Reset all play buttons to default state
         function resetAllPlayButtons() {
             document.querySelectorAll('.play-btn path').forEach(path => {
                 path.setAttribute('d', 'M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z M21 12a9 9 0 11-18 0 9 9 0 0118 0z');
             });
         }
         
-        // Play TTS
         window.toggleSpeech = function(rawText, btnId) {
             if (!('speechSynthesis' in window)) {
-                return; // Silently fail if not supported
+                return;
             }
             
             const btn = document.getElementById(btnId);
             if (!btn) return;
             const iconPath = btn.querySelector('path');
             
-            const cleanText = rawText.replace(/<[^>]*>?/gm, ''); // Strip HTML tags
+            const cleanText = rawText.replace(/<[^>]*>?/gm, ''); 
             
             if (window.speechSynthesis.speaking) {
                 window.speechSynthesis.cancel();
@@ -464,10 +466,9 @@
             
             window.currentPlayingBtn = btnId;
             const utterance = new SpeechSynthesisUtterance(cleanText);
-            utterance.lang = 'zh-HK'; // Cantonese
-            utterance.rate = 1.1; // 1.1x speed
+            utterance.lang = 'zh-HK'; 
+            utterance.rate = currentRate; 
             
-            // Try to find a HK voice explicitly
             const voices = window.speechSynthesis.getVoices();
             const hkVoice = voices.find(v => v.lang === 'zh-HK' || v.lang === 'zh-TW');
             if (hkVoice) {
@@ -476,7 +477,6 @@
             
             utterance.onstart = () => {
                 resetAllPlayButtons();
-                // Change to Stop icon
                 iconPath.setAttribute('d', 'M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z');
             };
             
@@ -493,17 +493,14 @@
             window.speechSynthesis.speak(utterance);
         };
 
-        // Load content for a specific day
         function loadDay(day) {
             currentDay = day;
             const data = devotions.find(d => d.day === day);
             
-            // Fade out
             contentContainer.classList.remove('opacity-100');
             contentContainer.classList.add('opacity-0');
 
             setTimeout(() => {
-                // Update sidebar UI
                 document.querySelectorAll('.day-btn').forEach(btn => {
                     btn.classList.remove('active', 'text-purple-300');
                     btn.classList.add('text-gray-300');
@@ -513,12 +510,14 @@
                     }
                 });
 
-                // Prepare JS friendly string for onclick
-                const safeScriptureText = data.scriptureText.replace(/'/g, "\\'");
-                const safeContentText = data.content.replace(/'/g, "\\'").replace(/\n/g, ' ');
-                const safeAllText = `今日經文：${safeScriptureText}。靈修內容：${safeContentText}`;
+                // Generate text for TTS avoiding syntax errors and removing HTML tags/newlines
+                const safeScriptureText = data.scriptureText.replace(/'/g, "\\'").replace(/\n/g, ' ');
+                const safeContentText = data.content.replace(/'/g, "\\'").replace(/<[^>]*>?/gm, '').replace(/\n/g, ' ');
+                const safeMeditationText = `第一，${data.q1}。第二，${data.q2}`.replace(/'/g, "\\'").replace(/\n/g, ' ');
+                const safePrayerText = data.prayer.replace(/'/g, "\\'").replace(/\n/g, ' ');
+                
+                const safeAllText = `今日經文：${safeScriptureText}。靈修內容：${safeContentText}。深度默想：${safeMeditationText}。回應禱告：${safePrayerText}`;
 
-                // Inject Content
                 contentContainer.innerHTML = `
                     <div class="mb-8 text-center flex flex-col items-center">
                         <h2 class="text-purple-400 font-semibold tracking-widest uppercase text-sm mb-2">Day ${data.day}</h2>
@@ -539,6 +538,12 @@
                     <div class="glass-panel p-6 md:p-8 mb-8 border-l-4 border-l-purple-400 relative">
                         <div class="flex justify-between items-center mb-4">
                             <h3 class="text-lg font-semibold text-purple-200">今日經文</h3>
+                            <button id="tts-btn-scripture" onclick="toggleSpeech('${safeScriptureText}', 'tts-btn-scripture')" class="play-btn text-purple-300 hover:text-purple-100 focus:outline-none flex items-center gap-1 bg-white/10 px-3 py-1.5 rounded-full text-sm">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                                聆聽
+                            </button>
                         </div>
                         <p class="text-lg leading-relaxed text-gray-100 italic">「${data.scriptureText}」</p>
                     </div>
@@ -546,6 +551,12 @@
                     <div class="mb-10">
                         <div class="flex justify-between items-center mb-4">
                             <h3 class="text-xl font-semibold text-white">靈修內容</h3>
+                            <button id="tts-btn-content" onclick="toggleSpeech('${safeContentText}', 'tts-btn-content')" class="play-btn text-purple-300 hover:text-purple-100 focus:outline-none flex items-center gap-1 bg-white/10 px-3 py-1.5 rounded-full text-sm">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                                聆聽
+                            </button>
                         </div>
                         <div class="prose prose-invert max-w-none text-gray-300 leading-loose text-justify text-base md:text-lg">
                             ${data.content}
@@ -553,11 +564,19 @@
                     </div>
 
                     <div class="mb-10">
-                        <div class="flex items-center mb-4">
-                            <div class="w-8 h-8 rounded-full bg-purple-900/50 flex items-center justify-center mr-3 border border-purple-500/30">
-                                <svg class="w-4 h-4 text-purple-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        <div class="flex justify-between items-center mb-4">
+                            <div class="flex items-center">
+                                <div class="w-8 h-8 rounded-full bg-purple-900/50 flex items-center justify-center mr-3 border border-purple-500/30">
+                                    <svg class="w-4 h-4 text-purple-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                </div>
+                                <h3 class="text-xl font-semibold text-white">深度默想</h3>
                             </div>
-                            <h3 class="text-xl font-semibold text-white">深度默想</h3>
+                            <button id="tts-btn-meditation" onclick="toggleSpeech('${safeMeditationText}', 'tts-btn-meditation')" class="play-btn text-purple-300 hover:text-purple-100 focus:outline-none flex items-center gap-1 bg-white/10 px-3 py-1.5 rounded-full text-sm">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                                聆聽
+                            </button>
                         </div>
                         <ul class="space-y-4 text-gray-300 bg-white/5 p-6 rounded-2xl">
                             <li class="flex items-start">
@@ -573,33 +592,37 @@
 
                     <div class="glass-panel p-6 md:p-8 relative overflow-hidden">
                         <div class="absolute top-0 right-0 w-32 h-32 bg-purple-500/10 rounded-full blur-3xl -mr-10 -mt-10"></div>
-                        <h3 class="text-xl font-semibold mb-4 text-white flex items-center">
-                            <svg class="w-5 h-5 mr-2 text-purple-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M14.707 10.293a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 111.414-1.414L9 12.586V5a1 1 0 012 0v7.586l2.293-2.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
-                            回應禱告
-                        </h3>
-                        <p class="text-gray-200 leading-relaxed italic">
+                        <div class="flex justify-between items-center mb-4 relative z-10">
+                            <h3 class="text-xl font-semibold text-white flex items-center">
+                                <svg class="w-5 h-5 mr-2 text-purple-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M14.707 10.293a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 111.414-1.414L9 12.586V5a1 1 0 012 0v7.586l2.293-2.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
+                                回應禱告
+                            </h3>
+                            <button id="tts-btn-prayer" onclick="toggleSpeech('${safePrayerText}', 'tts-btn-prayer')" class="play-btn text-purple-300 hover:text-purple-100 focus:outline-none flex items-center gap-1 bg-white/10 px-3 py-1.5 rounded-full text-sm">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                                聆聽
+                            </button>
+                        </div>
+                        <p class="text-gray-200 leading-relaxed italic relative z-10">
                             「${data.prayer}」
                         </p>
                     </div>
                 `;
 
-                // Fade in
                 contentContainer.classList.remove('opacity-0');
                 contentContainer.classList.add('opacity-100');
                 
-                // Scroll to top
                 document.querySelector('main').scrollTop = 0;
             }, 300);
         }
 
-        // Initialize voices on load to avoid delay
         if ('speechSynthesis' in window) {
             window.speechSynthesis.onvoiceschanged = function() {
                 window.speechSynthesis.getVoices();
             };
         }
 
-        // Run on load
         window.addEventListener('DOMContentLoaded', init);
     </script>
 </body>
